@@ -1,10 +1,10 @@
-# Creating Retro Sprite Games with Claude Code, Gemini, and Veo 3
+# Claude After Dark: Creating Retro Sprite Games with Claude Code, Gemini, and Veo 3
 
 ![Flying Toasters Screenshot](afterdark.png)
 
 This article documents techniques for generating consistent, animated sprite graphics using Google's Gemini API (Imagen and Veo). The examples come from recreating the classic "Flying Toasters" screensaver from After Dark.
 
-What makes this workflow unique: **we used Claude Code (an AI coding assistant) to iteratively develop and refine the Gemini prompts and processing pipeline.** This "AI-driving-AI" approach accelerates creative iteration significantly.
+What makes this workflow interesting: **I used Claude Code (an AI coding assistant) to iteratively develop and refine the Gemini prompts and processing pipeline.** This "AI-driving-AI" approach accelerates creative iteration significantly.
 
 ## The Challenge: Consistency Across Animation Frames
 
@@ -292,7 +292,7 @@ def create_pingpong_cycle(frames):
 
 ## The Meta-Technique: Using Claude Code to Drive Gemini
 
-One of the most powerful aspects of this project was using **Claude Code** (Anthropic's AI coding assistant) to orchestrate the entire Gemini workflow. This creates a rapid iteration loop that's faster than manual coding.
+One of the most powerful aspects of this project was using **Claude Code** to orchestrate the entire Gemini workflow. This creates a rapid iteration loop that's faster than manual coding.
 
 ### Why AI-Driving-AI Works
 
@@ -312,62 +312,6 @@ The key advantages:
 2. **Visual feedback loop**: Claude can view the generated sprites and assess quality
 3. **Rapid debugging**: When Gemini returns errors (like unsupported parameters), Claude fixes them immediately
 4. **Domain expertise**: Claude knows PIL, FFmpeg, and API patterns without looking them up
-
-### Example Interaction Flow
-
-Here's how the actual development session progressed:
-
-**Step 1: Planning**
-```
-Human: "I want to generate flying toaster sprites with consistent design"
-
-Claude: *Creates a plan document with three approaches:*
-        - Separate image generation
-        - Sprite sheet generation
-        - Video generation with frame extraction
-```
-
-**Step 2: Implementation**
-```
-Human: "Let's try the video approach"
-
-Claude: *Writes generate_video_sprites.py with:*
-        - Veo API call
-        - FFmpeg frame extraction
-        - PIL chroma key removal
-```
-
-**Step 3: Error Handling**
-```
-*Script runs, Gemini returns error:*
-"400 INVALID_ARGUMENT: dont_allow for personGeneration is not supported"
-
-Claude: *Immediately edits the script to remove the unsupported parameter*
-Claude: *Re-runs the script*
-```
-
-**Step 4: Visual Assessment**
-```
-*Video generates, frames extracted*
-
-Claude: *Views the output images*
-Claude: "The green background wasn't removed properly—the background
-         is muted sage green rather than bright chroma key green.
-         Let me fix the algorithm."
-
-Claude: *Updates the chroma key function with adaptive thresholds*
-Claude: *Reprocesses frames*
-Claude: *Views results* "The transparency looks correct now."
-```
-
-**Step 5: Integration Testing**
-```
-Human: "The toasts still have a black box visible"
-
-Claude: *Views toast.png, sees black background*
-Claude: *Writes and runs a one-liner to remove black pixels*
-Claude: "Fixed. The toast now has a transparent background."
-```
 
 ### The Prompt Iteration Cycle
 
@@ -409,28 +353,6 @@ screensaver style"
 
 Each iteration was tested and refined based on actual output—a process that took minutes with Claude Code versus hours of manual iteration.
 
-### Practical Tips for AI-Driving-AI
-
-1. **Describe the end goal**, not the implementation
-   - Good: "Generate consistent sprite animation frames"
-   - Bad: "Write a Python script that calls the Veo API"
-
-2. **Let Claude see the outputs**
-   - Claude can view images and assess quality
-   - Say "check the generated frames" and Claude will read and analyze them
-
-3. **Iterate verbally**
-   - "The background removal isn't working" → Claude fixes it
-   - "The wings don't move enough" → Claude adjusts the prompt
-
-4. **Trust the error handling**
-   - When APIs return errors, Claude reads and fixes them
-   - No need to debug yourself unless you want to
-
-5. **Commit incrementally**
-   - Ask Claude to commit working versions
-   - Easy to roll back if experiments fail
-
 ### Tools Used
 
 - **Claude Code**: AI coding assistant (Anthropic)
@@ -449,6 +371,20 @@ Each iteration was tested and refined based on actual output—a process that to
 ## Try It Yourself
 
 Want to generate your own flying toasters? Copy the ready-to-use prompt from **[PROMPT_FOR_SPRITE_GENERATION.md](PROMPT_FOR_SPRITE_GENERATION.md)** and paste it into Claude Code.
+
+## Run the Screensaver Locally
+
+```bash
+# Clone the repository
+git clone https://github.com/MikeVeerman/claude-after-dark.git
+cd claude-after-dark
+
+# Install pygame
+pip install pygame
+
+# Run the screensaver (fullscreen, press any key or move mouse to exit)
+python flying_toasters.py
+```
 
 ## Files in This Project
 
