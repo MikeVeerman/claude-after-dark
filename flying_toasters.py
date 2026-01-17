@@ -16,6 +16,8 @@ BLACK = (0, 0, 0)
 # Sprite size (scale down from 1024x1024)
 TOASTER_SIZE = 128
 TOAST_SIZE = 80
+BAGUETTE_SIZE = 100
+EGG_SIZE = 120
 
 
 def load_sprites(sprites_dir: Path):
@@ -48,7 +50,32 @@ def load_sprites(sprites_dir: Path):
         img = pygame.transform.smoothscale(img, (TOAST_SIZE, TOAST_SIZE))
         toast_frames.append(img)
 
-    return toaster_frames, toast_frames
+    # Load baguette
+    baguette_path = sprites_dir / "baguette.png"
+    baguette_frames = []
+    if baguette_path.exists():
+        img = pygame.image.load(str(baguette_path)).convert_alpha()
+        img = pygame.transform.smoothscale(img, (BAGUETTE_SIZE, BAGUETTE_SIZE))
+        baguette_frames.append(img)
+
+    # Load egg frames (animated)
+    egg_frames = []
+    i = 0
+    while True:
+        path = sprites_dir / f"egg_frame_{i}.png"
+        if path.exists():
+            img = pygame.image.load(str(path)).convert_alpha()
+            img = pygame.transform.smoothscale(img, (EGG_SIZE, EGG_SIZE))
+            egg_frames.append(img)
+            i += 1
+        else:
+            break
+
+    # Ping-pong for smooth wobble loop
+    if 2 <= len(egg_frames) <= 8:
+        egg_frames.extend(egg_frames[-2:0:-1])
+
+    return toaster_frames, toast_frames, baguette_frames, egg_frames
 
 
 class FlyingSprite:
@@ -103,7 +130,7 @@ def main():
 
     # Load sprites
     sprites_dir = Path(__file__).parent / "sprites"
-    toaster_frames, toast_frames = load_sprites(sprites_dir)
+    toaster_frames, toast_frames, baguette_frames, egg_frames = load_sprites(sprites_dir)
 
     if not toaster_frames:
         print("Error: No toaster sprites found. Run generate_sprites.py first.")
@@ -146,12 +173,21 @@ def main():
                 speed_x = random.uniform(-4, -2)
                 speed_y = random.uniform(1, 2.5)
 
-                # 70% toasters, 30% toast
-                if random.random() < 0.7 or not toast_frames:
+                # 50% toasters, 15% toast, 15% baguettes, 20% eggs
+                roll = random.random()
+                if roll < 0.5:
                     sprite = FlyingSprite(toaster_frames, x, y, speed_x, speed_y,
                                          frame_delay=random.randint(6, 10))
-                else:
+                elif roll < 0.65 and toast_frames:
                     sprite = FlyingSprite(toast_frames, x, y, speed_x, speed_y)
+                elif roll < 0.80 and baguette_frames:
+                    sprite = FlyingSprite(baguette_frames, x, y, speed_x, speed_y)
+                elif egg_frames:
+                    sprite = FlyingSprite(egg_frames, x, y, speed_x, speed_y,
+                                         frame_delay=random.randint(8, 12))
+                else:
+                    sprite = FlyingSprite(toaster_frames, x, y, speed_x, speed_y,
+                                         frame_delay=random.randint(6, 10))
 
                 sprites.append(sprite)
 
